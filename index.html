@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Responsive Video Grid (2 per row)</title>
+  <style>
+    :root{
+      --gap: 16px;
+      --card-radius: 12px;
+      --bg: #0f1724;
+      --card-bg: #0b1220;
+      --muted: #9aa4b2;
+    }
+
+    body{
+      margin:0;
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(180deg,#071126 0%, #071827 100%);
+      color: #e6eef6;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:28px;
+      box-sizing:border-box;
+    }
+
+    header{
+      width:100%;
+      max-width:1100px;
+      margin-bottom:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    h1{ font-size:1.2rem; margin:0; }
+    p.lead{ margin:0; color:var(--muted); font-size:0.95rem; }
+
+    /* Grid container */
+    .grid{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      gap:var(--gap);
+      /* default stack (mobile) */
+      grid-template-columns: 1fr;
+    }
+
+    /* At >= 700px: 2 columns (user requested) */
+    @media (min-width:700px){
+      .grid{
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Card */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--card-radius);
+      padding:10px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    /* Video wrapper keeps 16:9 ratio */
+    .video-wrap{
+      position:relative;
+      width:100%;
+      padding-top:56.25%; /* 16:9 */
+      border-radius:10px;
+      overflow:hidden;
+      background: #000;
+    }
+
+    .video-wrap video{
+      position:absolute;
+      top:0; left:0; width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      font-size:0.95rem;
+    }
+    .title{ font-weight:600; }
+    .controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    button.btn{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--muted);
+      padding:6px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:0.9rem;
+    }
+    button.btn:hover{ color:#fff; border-color:rgba(255,255,255,0.14); }
+
+    footer{ margin-top:20px; color:var(--muted); font-size:0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>My Video Gallery</h1>
+      <p class="lead">Responsive grid — 1 column on mobile, 2 per row on tablets/desktop (≥700px).</p>
+    </div>
+    <div class="controls">
+      <button class="btn" id="muteAll">Mute All</button>
+      <button class="btn" id="pauseAll">Pause All</button>
+    </div>
+  </header>
+
+  <main class="grid" id="gallery">
+    <!-- Card 1 -->
+    <article class="card">
+      <div class="video-wrap">
+        <!-- Replace src with your actual video files -->
+        <video controls preload="metadata" data-id="v1">
+          <source src="video1.mp4" type="video/mp4">
+          Your browser doesn't support HTML5 video.
+        </video>
+      </div>
+      <div class="meta">
+        <div class="title">Video 1 — Introduction</div>
+        <div class="info">2:34</div>
+      </div>
+    </article>
+
+    <!-- Card 2 -->
+    <article class="card">
+      <div class="video-wrap">
+        <video controls preload="metadata" data-id="v2">
+          <source src="video2.mp4" type="video/mp4">
+          Your browser doesn't support HTML5 video.
+        </video>
+      </div>
+      <div class="meta">
+        <div class="title">Video 2 — Quick Demo</div>
+        <div class="info">1:45</div>
+      </div>
+    </article>
+
+    <!-- Card 3 -->
+    <article class="card">
+      <div class="video-wrap">
+        <video controls preload="metadata" data-id="v3">
+          <source src="video3.mp4" type="video/mp4">
+          Your browser doesn't support HTML5 video.
+        </video>
+      </div>
+      <div class="meta">
+        <div class="title">Video 3 — Feature Clip</div>
+        <div class="info">0:58</div>
+      </div>
+    </article>
+
+    <!-- Card 4 -->
+    <article class="card">
+      <div class="video-wrap">
+        <video controls preload="metadata" data-id="v4">
+          <source src="video4.mp4" type="video/mp4">
+          Your browser doesn't support HTML5 video.
+        </video>
+      </div>
+      <div class="meta">
+        <div class="title">Video 4 — Outro</div>
+        <div class="info">3:12</div>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    Tip: Replace `videoX.mp4` with your S3/CloudFront URLs or local files.
+  </footer>
+
+  <script>
+    // Basic page-level controls
+    const muteBtn = document.getElementById('muteAll');
+    const pauseBtn = document.getElementById('pauseAll');
+    const videos = Array.from(document.querySelectorAll('video'));
+
+    muteBtn.addEventListener('click', () => {
+      const anyMuted = videos.every(v => v.muted);
+      videos.forEach(v => v.muted = !anyMuted);
+      muteBtn.textContent = anyMuted ? 'Mute All' : 'Unmute All';
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      const anyPlaying = videos.some(v => !v.paused && !v.ended);
+      if (anyPlaying) {
+        videos.forEach(v => v.pause());
+        pauseBtn.textContent = 'Play All';
+      } else {
+        videos.forEach(v => v.play().catch(()=>{}));
+        pauseBtn.textContent = 'Pause All';
+      }
+    });
+
+    // Auto-pause other videos when one starts playing (optional UX)
+    videos.forEach(v => {
+      v.addEventListener('play', () => {
+        videos.forEach(other => { if (other !== v) other.pause(); });
+      });
+    });
+  </script>
+</body>
+</html>
